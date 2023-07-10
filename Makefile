@@ -96,6 +96,10 @@ GOVERALLS = $(BINDIR)/goveralls
 $(GOVERALLS): | $(BASE) ; $(info  installing goveralls...)
 	$(call go-install-tool,$(GOVERALLS),github.com/mattn/goveralls@latest)
 
+HADOLINT_TOOL = $(BINDIR)/hadolint
+$(HADOLINT_TOOL): | $(BASE) ; $(info  installing hadolint...)
+	$(call wget-install-tool,$(HADOLINT_TOOL),"https://github.com/hadolint/hadolint/releases/download/v2.12.1-beta/hadolint-Linux-x86_64")
+
 COVERAGE_MODE = count
 COVER_PROFILE = ib-sriov-cni.cover
 test-coverage-tools: | $(GOVERALLS)
@@ -105,6 +109,11 @@ test-coverage: test-coverage-tools | $(BASE) ; $(info  running coverage tests...
 .PHONY: upload-coverage
 upload-coverage: test-coverage-tools | $(BASE) ; $(info  uploading coverage results...) @ ## Upload coverage report
 	$(GOVERALLS) -coverprofile=$(COVER_PROFILE) -service=github
+
+.PHONY: hadolint
+hadolint: $(BASE) $(HADOLINT_TOOL); $(info  running hadolint...) @ ## Run hadolint
+	$Q $(HADOLINT_TOOL) Dockerfile
+
 
 # Container image
 .PHONY: image
@@ -129,3 +138,11 @@ clean: ; $(info  Cleaning...)	 ## Cleanup everything
 help: ## Show this message
 	@grep -E '^[ a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+define wget-install-tool
+@[ -f $(1) ] || { \
+echo "Downloading $(2)" ;\
+wget -O $(1) $(2);\
+chmod +x $(1) ;\
+}
+endef
