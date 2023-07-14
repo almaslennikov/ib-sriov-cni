@@ -1,4 +1,4 @@
-FROM ppc64le/golang:1.20-alpine as builder
+FROM arm64v8/golang:1.20-alpine as builder
 
 COPY . /usr/src/ib-sriov-cni
 
@@ -10,7 +10,7 @@ RUN apk add --update --virtual build-dependencies build-base linux-headers make 
     make clean && \
     make build
 
-FROM ppc64le/alpine
+FROM arm64v8/alpine
 COPY --from=builder /usr/src/ib-sriov-cni/build/ib-sriov /usr/bin/
 WORKDIR /
 
