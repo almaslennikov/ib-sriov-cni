@@ -64,7 +64,7 @@ jobs:
           platforms: linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:latest-arm64
-          file: ./Dockerfile.arm64
+          file: ./Dockerfile
 
   build-and-push-ppc64le-ib-sriov-cni:
     name: image Push ppc64le
@@ -94,7 +94,7 @@ jobs:
           platforms: linux/ppc64le
           tags: |
             ${{ env.IMAGE_NAME }}:latest-ppc64le
-          file: ./Dockerfile.ppc64le
+          file: ./Dockerfile
 
   push-manifest:
     runs-on: ubuntu-22.04
